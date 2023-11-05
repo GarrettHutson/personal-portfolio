@@ -2,8 +2,15 @@
 import { motion } from "framer-motion";
 import { links } from "@/lib/data";
 import Link from "next/link";
+import { useContext } from "react";
+import ActiveSection, {
+  useActiveSectionContext,
+} from "@/context/active-section";
 
 export default function Header() {
+  const { activeSection, setActiveSection, setTimeOfClick } =
+    useActiveSectionContext();
+
   return (
     <header className="relative z-[999]">
       <motion.div
@@ -15,17 +22,34 @@ export default function Header() {
         <ul className=" flex w-[22rem] flex-wrap items-center justify-center gap-y-1 text-[0.9rem] font-medium text-gray-500 sm:w-[initial] sm:flex-nowrap sm:gap-5">
           {links.map((link, i) => (
             <motion.li
-              className="flex h-3/4 items-center justify-center "
+              className="relative flex h-3/4 items-center justify-center"
               key={link.hash}
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
             >
               <Link
                 href={link.hash}
-                className="flex w-full items-center justify-center p-3 transition hover:text-gray-950"
+                className={`flex w-full items-center justify-center p-3 transition hover:text-gray-950 ${
+                  activeSection === link.name ? " text-gray-950" : ""
+                }`}
+                onClick={() => {
+                  setActiveSection(link.name);
+                  setTimeOfClick(Date.now());
+                }}
               >
                 {link.name}
               </Link>
+              {activeSection === link.name && (
+                <motion.span
+                  layoutId="isActive"
+                  transition={{
+                    type: "spring",
+                    stiffness: 380,
+                    damping: 30,
+                  }}
+                  className={`absolute inset-0 z-[-1] rounded-full bg-gray-200`}
+                ></motion.span>
+              )}
             </motion.li>
           ))}
         </ul>

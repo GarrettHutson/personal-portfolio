@@ -1,13 +1,26 @@
 "use client";
+import { useActiveSectionContext } from "@/context/active-section";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { BsArrowRight, BsGithub, BsLinkedin } from "react-icons/bs";
 import { HiDownload } from "react-icons/hi";
+import { useInView } from "react-intersection-observer";
+import { useEffect } from "react";
 export default function Intro() {
+  const { ref, inView } = useInView({
+    threshold: 0.5,
+  });
+  const { activeSection, setActiveSection, timeOfClick, setTimeOfClick } =
+    useActiveSectionContext();
+  useEffect(() => {
+    if (inView && Date.now() - timeOfClick > 1000) {
+      setActiveSection("Home");
+    }
+  }, [inView, setActiveSection, timeOfClick]);
   return (
-    <section className="">
-      <div className="flex flex-col items-center justify-center">
+    <section ref={ref} className="home">
+      <div className="flex scroll-mt-28 flex-col items-center justify-center">
         <div className="relative">
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
@@ -63,6 +76,10 @@ export default function Intro() {
         }}
       >
         <Link
+          onClick={() => {
+            setActiveSection("Contact");
+            setTimeOfClick(Date.now());
+          }}
           href="#contact"
           className="group flex cursor-pointer items-center gap-2 rounded-full bg-gray-900 px-7 py-3 text-white outline-none transition hover:scale-110 hover:bg-gray-950 focus:scale-110 active:scale-105"
         >

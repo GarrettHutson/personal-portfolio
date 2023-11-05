@@ -1,8 +1,27 @@
+"use client";
+
+import { useInView } from "react-intersection-observer";
 import SectionHeading from "./section-heading";
+import { useActiveSectionContext } from "@/context/active-section";
+import { useEffect } from "react";
 
 export default function About() {
+  const { ref, inView } = useInView({
+    threshold: 0.75,
+  });
+  const { activeSection, setActiveSection, timeOfClick, setTimeOfClick } =
+    useActiveSectionContext();
+  useEffect(() => {
+    if (inView && Date.now() - timeOfClick > 1000) {
+      setActiveSection("About");
+    }
+  }, [inView, setActiveSection, timeOfClick]);
   return (
-    <div className="flex w-full flex-col items-center justify-center text-center md:w-3/4 lg:w-1/2">
+    <section
+      ref={ref}
+      id="about"
+      className="flex w-full scroll-mt-28 flex-col items-center justify-center text-center md:w-3/4 lg:w-1/2"
+    >
       <SectionHeading as={"h2"} className="  ">
         About Me
       </SectionHeading>
@@ -32,6 +51,6 @@ export default function About() {
         <span className="font-medium">history and philosophy</span>. I'm also
         learning how to play the guitar.
       </p>
-    </div>
+    </section>
   );
 }

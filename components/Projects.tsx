@@ -1,45 +1,36 @@
+"use client";
+
 import { projectsData } from "@/lib/data";
 import SectionHeading from "./section-heading";
-import Image from "next/image";
-import { title } from "process";
+import { useEffect } from "react";
+import Project from "./Project";
+import React from "react";
+import { useInView } from "react-intersection-observer";
+import { useActiveSectionContext } from "@/context/active-section";
 
 export default function Projects() {
+  const { ref, inView } = useInView({
+    threshold: 0.5,
+  });
+  const { setActiveSection, timeOfClick, setTimeOfClick } =
+    useActiveSectionContext();
+  useEffect(() => {
+    if (inView && Date.now() - timeOfClick > 1000) {
+      setActiveSection("Projects");
+    }
+  }, [inView, setActiveSection, timeOfClick]);
   return (
-    <section className="flex flex-col items-center justify-center">
-      <SectionHeading className="mt-4" as={"h2"}>
+    <section ref={ref} id="projects" className="mt-28 scroll-mt-28">
+      <SectionHeading className="mt-4 text-center " as={"h2"}>
         Projects
       </SectionHeading>
-      <>
-        {projectsData.map((project: (typeof projectsData)[number], i) => (
-          <div className="flex  w-1/2" key={i}>
-            <div className="flex flex-col ">
-              <SectionHeading className="text-normal font-normal" as={"h3"}>
-                {project.title}
-              </SectionHeading>
-              <div>{project.description}</div>
-              <ul className="flex">
-                {project.tags.map((tag, i) => (
-                  <li
-                    className="rounded-full border-2 border-black/10 bg-slate-300 p-2"
-                    key={i}
-                  >
-                    {" "}
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <Image
-                width={200}
-                height={200}
-                src={project.imageUrl}
-                alt="project image"
-              />
-            </div>
-          </div>
+      <div>
+        {projectsData.map((project, index) => (
+          <React.Fragment key={index}>
+            <Project {...project} />
+          </React.Fragment>
         ))}
-      </>
+      </div>
     </section>
   );
 }
